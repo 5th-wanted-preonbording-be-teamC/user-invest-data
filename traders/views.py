@@ -8,6 +8,11 @@ from traders.models import Trader
 
 class TradersView(APIView):
     def get(self, request):
+        """
+        증권사 목록
+        GET /api/v1/traders/
+        """
         traders = Trader.objects.all()
-        serializer = serializers.TredersSerializer(traders)
+        serializer = serializers.TradersSerializer(traders)
+
         return Response(serializer.data, status=status.HTTP_200_OK)

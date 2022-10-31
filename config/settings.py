@@ -44,6 +44,7 @@ THIRD_PARTY_APPS = [
 
 CUSTOM_APPS = [
     "users.apps.UsersConfig",
+    "assets.apps.AssetsConfig",
 ]
 
 SYSTEM_APPS = [

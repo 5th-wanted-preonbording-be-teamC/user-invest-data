@@ -8,6 +8,7 @@
   - [목차](#목차)
   - [멤버소개](#멤버소개)
   - [프로젝트 요구사항](#프로젝트-요구사항)
+  - [Batch Scripts](#batch-scripts)
   - [ER Diagram](#er-diagram)
     - [accounts](#accounts)
     - [stocks](#stocks)
@@ -17,17 +18,24 @@
 
 ## 멤버소개
 
-|이름|Github|Email|Blog|
-|---|---|---|---|
-|이찬행|https://github.com/2chanhaeng|2chanhaeng@gmail.com|https://chomu.dev/|
-|이호진|https://github.com/HoJin9622|kiss0104040@gmail.com|https://velog.io/@hojin9622|
-|김동현|https://github.com/xxddongxx|hyeon2187@gmail.com||
+| 이름   | Github                        | Email                 | Blog                        |
+| ------ | ----------------------------- | --------------------- | --------------------------- |
+| 이찬행 | https://github.com/2chanhaeng | 2chanhaeng@gmail.com  | https://chomu.dev/          |
+| 이호진 | https://github.com/HoJin9622  | kiss0104040@gmail.com | https://velog.io/@hojin9622 |
+| 김동현 | https://github.com/xxddongxx  | hyeon2187@gmail.com   |                             |
 
 ## 프로젝트 요구사항
 
 - 기존 운영서비스의 Backend 개발
 - 기능 구현을 위한 DB 생성 : 계좌, 사용자, 주식, 증권사 등
 - 정보 입력, 수정 시 데이터 형식의 유효성을 검사
+
+## Batch Scripts
+
+```bash
+# 자산 정보를 입력합니다.
+python manage.py seed_assets
+```
 
 ## ER Diagram
 

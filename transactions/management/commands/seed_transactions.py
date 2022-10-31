@@ -15,6 +15,7 @@ class Command(BaseCommand):
             "./data/account_asset_info_set.csv", newline=""
         ) as account_asset_info_set:
             account_asset_info_reader = csv.reader(account_asset_info_set)
+            Transaction.objects.all().delete()
             for index, row in enumerate(account_asset_info_reader):
                 try:
                     if index != 0:

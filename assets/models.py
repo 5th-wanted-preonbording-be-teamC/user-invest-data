@@ -23,7 +23,7 @@ class Group(models.Model):
 
 class Asset(models.Model):
     name = models.CharField(max_length=50, verbose_name="종목명")
-    isin = models.CharField(max_length=50, verbose_name="ISIN")
+    isin = models.CharField(max_length=50, unique=True, verbose_name="ISIN")
     group = models.ForeignKey(
         "Group",
         on_delete=models.CASCADE,

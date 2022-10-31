@@ -36,6 +36,10 @@ erDiagram
 ACCOUNT{
 }
 STOCK{
+  id integer
+  company string
+  isin string
+  ticker string
 }
 TRADER{
 }
@@ -54,6 +58,10 @@ STOCK ||--o{ ACCOUNT : deal
 ### stocks
 
 - 주식 모델
+  - `id`: ID
+  - `company`: 회사 이름
+  - `isin`: ISIN 코드
+  - `ticker`: 티커, 종목 식별 부호(약칭)
 
 ### traders
 

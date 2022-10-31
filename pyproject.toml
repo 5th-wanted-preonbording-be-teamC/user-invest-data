@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "user-invest-data"
+version = "0.1.0"
+description = "stock trading history app"
+authors = ["HoJin9622 <kiss0104040@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "user_invest_data"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Django = "^4.1.2"
+
+
+[tool.poetry.group.dev.dependencies]
+black = {version = "^22.10.0", allow-prereleases = true}
+flake8 = "^5.0.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

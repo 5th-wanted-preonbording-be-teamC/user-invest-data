@@ -19,14 +19,26 @@ class Command(BaseCommand):
             for index, row in enumerate(account_asset_info_reader):
                 try:
                     if index != 0:
-                        user = User.objects.get(name=row[0])
-                        asset = Asset.objects.get(isin=row[4])
+                        (
+                            name,
+                            trader,
+                            account_number,
+                            account_name,
+                            isin,
+                            price,
+                            amount,
+                        ) = row
+                        user = User.objects.get(name=name)
+                        asset = Asset.objects.get(isin=isin)
                         transaction = Transaction.objects.create(
-                            price=int(row[5]),
-                            amount=int(row[6]),
+                            price=int(price),
+                            amount=int(amount),
                             user=user,
                             asset=asset,
                         )
+                        # TODO ACCOUNT 및 Trader 관련 로직은 모델이 추가되면 수행
+                        # ...
+
                         self.stdout.write(
                             f"create {transaction} {self.style.SUCCESS('success!')}"
                         )

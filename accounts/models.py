@@ -10,4 +10,4 @@ class Account(models.Model):
     principal = models.PositiveBigIntegerField() # 투자원금
 
     def __str__(self):
-        return self.account_name
+        return f"{self.user}의 계좌 {self.number}"

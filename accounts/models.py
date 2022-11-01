@@ -24,8 +24,8 @@ class Account(models.Model):
         primary_key=True,
         verbose_name="계좌번호",
         )
-    user: models.ForeignKey = models.ForeignKey(
-        User,
+    owner: models.ForeignKey = models.ForeignKey(
+        AccountOwner,
         on_delete=models.CASCADE,
         verbose_name="계좌주",
     )

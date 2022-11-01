@@ -1,6 +1,6 @@
 from django.db import models
 from users.models import User
-# from traders.models import Trader
+from traders.models import Trader
 
 
 class AccountOwner(models.Model):
@@ -29,10 +29,10 @@ class Account(models.Model):
         on_delete=models.CASCADE,
         verbose_name="계좌주",
     )
-    # trader: models.ForeignKey = models.ForeignKey(
-    #     Trader,
-    #     on_delete=models.CASCADE,
-    # verbose_name="증권사")
+    trader: models.ForeignKey = models.ForeignKey(
+        Trader,
+        on_delete=models.CASCADE,
+    verbose_name="증권사")
     principal: models.PositiveBigIntegerField = models.PositiveBigIntegerField(
         verbose_name="투자원금",
     )

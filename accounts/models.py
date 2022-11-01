@@ -23,7 +23,12 @@ class Account(models.Model):
         max_length=20,
         primary_key=True,
         verbose_name="계좌번호",
-        )
+    )
+    name: models.CharField = models.CharField(
+        max_length=150,
+        verbose_name="계좌명",
+        null=True,
+    )
     owner: models.ForeignKey = models.ForeignKey(
         AccountOwner,
         on_delete=models.CASCADE,
@@ -32,7 +37,8 @@ class Account(models.Model):
     trader: models.ForeignKey = models.ForeignKey(
         Trader,
         on_delete=models.CASCADE,
-    verbose_name="증권사")
+        verbose_name="증권사",
+    )
     principal: models.PositiveBigIntegerField = models.PositiveBigIntegerField(
         verbose_name="투자원금",
     )

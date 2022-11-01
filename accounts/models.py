@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+
 # from traders.models import Trader
 
 
@@ -8,7 +9,7 @@ class Account(models.Model):
         max_length=20,
         primary_key=True,
         verbose_name="계좌번호",
-        )
+    )
     user: models.ForeignKey = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

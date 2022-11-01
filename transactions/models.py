@@ -28,3 +28,6 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.user}의 {self.asset} 추가"
+
+    def asset_price(transaction):
+        return transaction.price * transaction.amount

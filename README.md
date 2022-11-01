@@ -40,6 +40,14 @@ python manage.py seed_assets
 결과:<br />
 ![Screenshot 2022-10-31 at 2 59 42 PM](https://user-images.githubusercontent.com/57439651/198941620-70b41c85-bd3f-4e89-b68a-5961799ee814.png)
 
+```bash
+# 계좌 자산 정보를 입력합니다.
+python manage.py seed_transactions
+```
+
+결과:<br />
+<img width="641" alt="Screenshot 2022-11-01 at 10 18 46 AM" src="https://user-images.githubusercontent.com/57439651/199138124-50b610c4-fd5c-4a0a-b8d2-6757c8a74caa.png">
+
 
 ## ER Diagram
 

@@ -13,4 +13,4 @@ class DepositAndWithdrawal(serializers.ModelSerializer):
 class TraderListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ["trader_id", "number"]
+        fields = ["trader_id", "number", "principal"]

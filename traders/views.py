@@ -34,7 +34,7 @@ class TraderList(APIView):
 
     def get(self, request):
         """
-        사용자가 가지고 있는증권사 목록
+        사용자가 가지고 있는 증권사 목록(계좌명, 증권사, 계좌번호, 총자산)
         GET /api/v1/traders/
         """
         user = request.user

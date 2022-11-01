@@ -45,6 +45,10 @@ python manage.py seed_assets
 python manage.py seed_transactions
 ```
 
+결과:<br />
+<img width="641" alt="Screenshot 2022-11-01 at 10 18 46 AM" src="https://user-images.githubusercontent.com/57439651/199138124-50b610c4-fd5c-4a0a-b8d2-6757c8a74caa.png">
+
+
 ## ER Diagram
 
 ```mermaid

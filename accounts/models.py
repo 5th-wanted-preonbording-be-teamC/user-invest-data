@@ -10,12 +10,13 @@ class AccountOwner(models.Model):
     하지만 계좌 소유자가 서비스 사용자라는 보장은 없다.
     따라서 계좌 소유자는 서비스 사용자와는 별도로 관리한다.
     """
+
     is_user = models.BooleanField(default=False)
     name = models.CharField(max_length=150, verbose_name="이름")
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return self.user.name
+        return self.name
 
 
 class Account(models.Model):

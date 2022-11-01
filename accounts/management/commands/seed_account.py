@@ -10,11 +10,8 @@ info_csv: Final[str] = "./data/account_asset_info_set.csv"
 
 
 def create_traderof_userof_by_infocsv(
-        fp: str = info_csv,
-        ) -> Tuple[
-            Callable[[str], Optional[Trader]],
-            Callable[[str], Optional[User]]
-        ]:
+    fp: str = info_csv,
+) -> Tuple[Callable[[str], Optional[Trader]], Callable[[str], Optional[User]]]:
     with open(fp) as asset_group_info_set:
         asset_reader: Iterator[Tuple[str]] = csv.reader(asset_group_info_set)
         next(asset_reader)  # skip header
@@ -25,13 +22,16 @@ def create_traderof_userof_by_infocsv(
                 continue
             trader_map[number] = (
                 traders.first()
-                if (traders := Trader.objects.filter(company=trader)).exists() else
-                Trader.objects.create(company=trader)
+                if (traders := Trader.objects.filter(company=trader)).exists()
+                else Trader.objects.create(company=trader)
             )
             user_map[number] = (
                 users.first()
-                if (users := User.objects.filter(username=username)).exists() else
-                User.objects.create(username=username)
+                if (users := User.objects.filter(username=username)).exists()
+                # 실 서비스에서는 User 식별자를 username으로 사용하면 안 됨
+                # 본인 인증 등의 추가 기능이 필요
+                # 임시로 username을 식별자로 사용
+                else User.objects.create(username=username)
             )
     return trader_map.get, user_map.get
 
@@ -45,6 +45,7 @@ def get_owner(user: Optional[User], default_name: str) -> AccountOwner:
             # 사용자와 연결된 계좌 소유자가 존재하는 경우
             owner = owners.first()
             # 해당 계좌 소유자를 계좌 소유자로 사용
+            # OneToOneField이므로 2개 이상 존재할 수 없음
         else:
             # 사용자와 연결된 계좌 소유자가 존재하지 않는 경우
             owner = AccountOwner.objects.create(
@@ -81,14 +82,14 @@ class Command(BaseCommand):
                     self.stdout.write(
                         self.style.SUCCESS(
                             f"AccountOwner {owner} is User {owner.user.id}."
-                            if owner.is_user else
-                            f"AccountOwner {owner.name} created."
+                            if owner.is_user
+                            else f"AccountOwner {owner.name} created."
                         )
                     )
                     account = (
                         accounts.first()
-                        if (accounts := Account.objects.filter(number=number)).exists() else
-                        Account.objects.create(
+                        if (accounts := Account.objects.filter(number=number)).exists()
+                        else Account.objects.create(
                             number=number,
                             name=f"{number}계좌",
                             owner=owner,

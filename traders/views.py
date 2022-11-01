@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 from accounts.models import Account
 from traders import serializers
+from traders.models import Trader
 
 
 class DepositAndWithdrawal(APIView):

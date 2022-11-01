@@ -47,6 +47,7 @@ CUSTOM_APPS = [
     "assets.apps.AssetsConfig",
     "transactions.apps.TransactionsConfig",
     "accounts.apps.AccountsConfig",
+    "traders.apps.TradersConfig",
 ]
 
 SYSTEM_APPS = [

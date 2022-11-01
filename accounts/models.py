@@ -45,4 +45,4 @@ class Account(models.Model):
     )
 
     def __str__(self) -> str:
-        return f"{self.user}의 계좌 {self.number}"
+        return f"{self.owner}의 계좌 {self.number}"

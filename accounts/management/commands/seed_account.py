@@ -3,25 +3,64 @@ from django.db import IntegrityError
 from django.core.management.base import BaseCommand
 from ...models import Account, AccountOwner
 from traders.models import Trader
-from typing import Callable, Final, List, Iterator, Dict
+from users.models import User
+from typing import Callable, Final, Tuple, Iterator, Dict, Optional
+
+info_csv: Final[str] = "./data/account_asset_info_set.csv"
 
 
-def create_traderof_by_infocsv(fp: str) -> Callable[[str], Trader]:
+def create_traderof_userof_by_infocsv(
+        fp: str = info_csv,
+        ) -> Tuple[
+            Callable[[str], Optional[Trader]],
+            Callable[[str], Optional[User]]
+        ]:
     with open(fp) as asset_group_info_set:
-        asset_reader: Iterator[List[str]] = csv.reader(asset_group_info_set)
+        asset_reader: Iterator[Tuple[str]] = csv.reader(asset_group_info_set)
         next(asset_reader)  # skip header
         trader_map: Dict[str, Trader] = {}
-        for _, trader, number, *_ in asset_reader:
+        user_map: Dict[str, Trader] = {}
+        for username, trader, number, *_ in asset_reader:
             if number in trader_map:
                 continue
             trader_map[number] = (
-                Trader.objects.get(company=trader)
-                if Trader.objects.filter(company=trader).exists() else
+                traders.first()
+                if (traders := Trader.objects.filter(company=trader)).exists() else
                 Trader.objects.create(company=trader)
             )
-        for i, j in trader_map.items():
-            print(i, j)
-    return trader_map.get
+            user_map[number] = (
+                users.first()
+                if (users := User.objects.filter(username=username)).exists() else
+                User.objects.create(username=username)
+            )
+    return trader_map.get, user_map.get
+
+
+def get_owner(user: Optional[User], default_name: str) -> AccountOwner:
+    if user is not None:
+        # 사용자가 존재하는 경우
+        owners = AccountOwner.objects.filter(user=user)
+        # 사용자와 연결된 계좌 소유자 검색
+        if owners.exists():
+            # 사용자와 연결된 계좌 소유자가 존재하는 경우
+            owner = owners.first()
+            # 해당 계좌 소유자를 계좌 소유자로 사용
+        else:
+            # 사용자와 연결된 계좌 소유자가 존재하지 않는 경우
+            owner = AccountOwner.objects.create(
+                is_user=True,
+                user=user,
+                name=user.username,
+            )
+            # 계좌 소유자 생성 후 계좌 소유자로 사용
+    else:
+        # 사용자가 존재하지 않는 경우
+        owner = AccountOwner.objects.create(
+            is_user=False,
+            name=default_name,  # f"{number}소유주"
+        )
+        # 임의의 계좌 소유자 생성 후 계좌 생성
+    return owner
 
 
 class Command(BaseCommand):
@@ -29,7 +68,7 @@ class Command(BaseCommand):
     help = "This command create accounts"
 
     def handle(self, *args, **options):
-        trader_of = create_traderof_by_infocsv("./data/account_asset_info_set.csv")
+        trader_of, user_of = create_traderof_userof_by_infocsv()
         with open(
             "./data/account_basic_info_set.csv", newline=""
         ) as account_basic_info_set:
@@ -37,20 +76,18 @@ class Command(BaseCommand):
             next(account_reader)
             for number, principal in account_reader:
                 try:
-                    ownername = f"{number}소유주"
-                    owner = (
-                        AccountOwner.objects.get(name=ownername)
-                        if AccountOwner.objects.filter(name=ownername).exists() else
-                        AccountOwner.objects.create(is_user=True, name=ownername)
-                    )  # 추후 User 모델과 연결
+                    user = user_of(number)
+                    owner = get_owner(user, f"{number}소유주")
                     self.stdout.write(
-                        self.style.SUCCESS(f"AccountOwner {owner} created")
+                        self.style.SUCCESS(
+                            f"AccountOwner {owner} is User {owner.user.id}."
+                            if owner.is_user else
+                            f"AccountOwner {owner.name} created."
+                        )
                     )
                     account = (
-                        Account.objects.get(
-                            number=number,
-                        )
-                        if Account.objects.filter(number=number).exists() else
+                        accounts.first()
+                        if (accounts := Account.objects.filter(number=number)).exists() else
                         Account.objects.create(
                             number=number,
                             name=f"{number}계좌",
@@ -63,7 +100,6 @@ class Command(BaseCommand):
                         self.style.SUCCESS(f"Account {account.number} created")
                     )
                 except IntegrityError:
-                    self.stdout.write(f"{number = }, {owner = }, {trader_of(number) = }, {int(principal) = }")
                     self.stdout.write(
                         f"{number}: {principal} {self.style.ERROR('fail!')}"
                     )

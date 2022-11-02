@@ -4,4 +4,4 @@ from .models import Account
 
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
-    list_display = ("name", "number", "user", "principal")
+    list_display = ("name", "number", "owner", "principal")

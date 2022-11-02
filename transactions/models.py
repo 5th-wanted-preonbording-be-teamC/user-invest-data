@@ -19,7 +19,15 @@ class Transaction(models.Model):
         related_name="transactions",
         verbose_name="자산",
     )
-    # TODO account = models.ForeignKey(...)
+    account = models.ForeignKey(
+        "accounts.Account",
+        on_delete=models.CASCADE,
+        related_name="transactions",
+        verbose_name="계좌",
+    )
 
     def __str__(self):
         return f"{self.user}의 {self.asset} 추가"
+
+    def asset_price(transaction):
+        return transaction.price * transaction.amount

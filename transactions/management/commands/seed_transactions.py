@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from ...models import Transaction
 from users.models import User
 from assets.models import Asset
+from accounts.models import Account
 
 
 class Command(BaseCommand):
@@ -30,15 +31,14 @@ class Command(BaseCommand):
                         ) = row
                         user = User.objects.get(name=name)
                         asset = Asset.objects.get(isin=isin)
+                        account = Account.objects.get(number=account_number)
                         transaction = Transaction.objects.create(
                             price=int(price),
                             amount=int(amount),
                             user=user,
                             asset=asset,
+                            account=account,
                         )
-                        # TODO ACCOUNT 및 Trader 관련 로직은 모델이 추가되면 수행
-                        # ...
-
                         self.stdout.write(
                             f"create {transaction} {self.style.SUCCESS('success!')}"
                         )
@@ -48,3 +48,5 @@ class Command(BaseCommand):
                     self.stdout.write(f"존재하지 않는 유저입니다 {self.style.ERROR('fail!')}")
                 except Asset.DoesNotExist:
                     self.stdout.write(f"존재하지 않는 자산입니다 {self.style.ERROR('fail!')}")
+                except Account.DoesNotExist:
+                    self.stdout.write(f"존재하지 않는 계좌입니다 {self.style.ERROR('fail!')}")

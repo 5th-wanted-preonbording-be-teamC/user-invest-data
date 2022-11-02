@@ -15,7 +15,7 @@ class TransactionSerializer(serializers.ModelSerializer):
         return obj.asset.name
 
     def get_asset_price(self, obj):
-        return obj.price * obj.amount
+        return obj.asset_price()
 
     def get_asset_isin(self, obj):
         return obj.asset.isin

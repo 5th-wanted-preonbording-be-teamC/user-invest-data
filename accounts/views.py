@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Account, AccountOwner
-from .serializers import AccountSerializer
+from .serializers import AccountSerializer, AccountDetailSerializer
 
 
 class AccountsView(APIView):
@@ -22,3 +22,19 @@ class AccountsView(APIView):
         accounts = Account.objects.filter(owner=owner.first())
         serializer = AccountSerializer(accounts, many=True)
         return Response(serializer.data)
+
+class AccountsDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, account_number):
+        """
+        유저가 보유하고 있는 계좌의 투자 상세를 불러옵니다.
+        GET api/v1/accounts/{account_number}
+        """
+        user = request.user
+        owner = AccountOwner.objects.filter(user=user)
+        accounts = Account.objects.filter(owner=owner.first(), number=account_number)
+        serializer = AccountDetailSerializer(accounts, many=True)
+        return Response(serializer.data)
+
+

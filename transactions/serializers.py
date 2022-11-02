@@ -2,6 +2,7 @@ from django.db.models import QuerySet
 from rest_framework import serializers
 from .models import Transaction
 from assets.models import Group
+from assets.serializers import GroupSerializer
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -24,9 +25,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 
 class TransactionsByGroupSerializer(serializers.ListSerializer):
-    class Meta:
-        model = Transaction
-        fields = ("name", "price", "isin", "group")
+    child = TransactionSerializer()
 
     def to_representation(self, data: QuerySet[Transaction]):
         groups = Group.objects.all()
@@ -34,11 +33,14 @@ class TransactionsByGroupSerializer(serializers.ListSerializer):
 
         for transaction in data:
             group = transaction.asset.group
-            bygroup[group].append(TransactionSerializer(transaction))
-
-        # 비어있는 그룹 제거
-        for group in groups:
-            if not bygroup[group]:
-                del bygroup[group]
-
-        return bygroup
+            bygroup[group].append(transaction)
+        return [
+            {
+                group.name: TransactionSerializer(
+                    transactions,
+                    many=True,
+                ).data
+                for group, transactions in bygroup.items()
+                if transactions
+            }
+        ]

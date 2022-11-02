@@ -24,6 +24,9 @@ class ErRes:
         return ErRes.data_status(
             f"{name} 님의 {account} 계좌를 조회할 수 없습니다.",
             404,
+            # 403이 아닌 이유: 계좌가 존재할 때 403을 리턴하면
+            # 계좌가 존재하지 간접적으로 정보가 노출된다.
+            # 이를 방지하기 위해 본인의 계좌 이외의 계좌를 요청하면 항상 404를 리턴한다.
         )
 
 
@@ -62,7 +65,7 @@ class RedirectToSelfView(APIView):
         본인의 투자 화면으로 redirect
         """
 
-        return HttpResponseRedirect(f"/api/v1/invest/users/{request.user.id}/")
+        return HttpResponseRedirect(f"/api/v1/invest/user/{request.user.id}/")
 
 
 class InvestDetailView(APIView):
@@ -130,8 +133,8 @@ class InvestTransactionsView(APIView):
         if not filtered_account.exists():
             return Response(**ErRes.USER_DONT_HAVE_THE_ACCOUNT(owner.name, account_pk))
         account = filtered_account.first()
+        transactions = Transaction.objects.filter(account=account)
         serializer = TransactionsByGroupSerializer(
-            Transaction.objects.filter(account=account),
-            many=True,
+            transactions,
         )
         return Response(serializer.data)

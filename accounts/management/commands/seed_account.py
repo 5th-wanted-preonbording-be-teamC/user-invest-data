@@ -70,11 +70,11 @@ class Command(BaseCommand):
                         owner=owner,
                         number=number,
                     ).get_or_create(
-                            owner=owner,
-                            number=number,
-                            trader=trader_of(number),
-                            principal=principal,
-                            name=f"{number}계좌",
+                        owner=owner,
+                        number=number,
+                        trader=trader_of(number),
+                        principal=principal,
+                        name=f"{number}계좌",
                     )
                     # if is_account_created: account.save()
 

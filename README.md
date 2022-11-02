@@ -11,14 +11,12 @@
   - [Batch Scripts](#batch-scripts)
   - [ER Diagram](#er-diagram)
     - [accounts](#accounts)
-    - [stocks](#stocks)
+    - [assets](#assets)
     - [traders](#traders)
+    - [transactions](#transactions)
     - [users](#users)
   - [API Docs](#api-docs)
-    - [유저 계좌 조회](#유저-계좌-조회)
-    - [보유 종목의 자산군 조회](#보유-종목의-자산군-조회)
-    - [해당하는 자산군에 보유한 자산 조회](#해당하는-자산군에-보유한-자산-조회)
-    - [투자 상세(미구현)](#투자-상세미구현)
+    - [데이터 조회 (`invest` 앱)](#데이터-조회-invest-앱)
     - [투자금 입금 Phase 1](#투자금-입금-phase-1)
     - [투자금 입금 Phase 2](#투자금-입금-phase-2)
 
@@ -41,7 +39,7 @@
 ```yml
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 ```
 
 Github Action을 이용하여 매일 12시 데이터베이스를 업데이트합니다.
@@ -67,121 +65,162 @@ python manage.py seed_transactions
 ```mermaid
 erDiagram
 ACCOUNT{
+  number string
+  name string
+  owner ACCOUNTOWNER
+  trader TRADER
+  principal integer
 }
-STOCK{
-  id integer
-  company string
+ACCOUNTOWNER{
+  is_user boolean
+  name string
+  user USER
+}
+HISTORY{
+  account ACCOUNT
+}
+TRANSFER{
+  account_number string
+  user_name string
+  transfer_amount integer
+}
+ASSET{
+  name string
   isin string
-  ticker string
+  group GROUP
+}
+GROUP{
+  name string
 }
 TRADER{
+  name string
+}
+TRANSACTION{
+  price integer
+  amount integer
+  user USER
+  asset ASSET
+  account ACCOUNT
 }
 USER{
+  name string
 }
 
-USER ||--o{ ACCOUNT : open
+ACCOUNTOWNER |o--o| USER : register
+ACCOUNTOWNER ||--o{ ACCOUNT : open
+HISTORY }o--|| ACCOUNT : log
+ASSET }o--|| GROUP : grouped
 TRADER ||--o{ ACCOUNT : allow
-STOCK ||--o{ ACCOUNT : deal
+TRANSACTION }o--|| ACCOUNT : deal
+TRANSACTION }o--|| ASSET : deal
+TRANSACTION }o--|| USER : deal
 ```
 
 ### accounts
 
-- 계좌 모델
+- `Account`: 계좌 모델
+  - `number`: 계좌번호
+  - `name`: 계좌명
+  - `owner`: 계좌 소유자
+  - `trader`: 증권사
+  - `principal`: 투자 원금
+- `AccountOwner`: 계좌 소유자 모델
+  - `is_user`: 계좌 소유자가 서비스 사용자인지 여부
+  - `name`: 계좌 소유자 명
+  - `user`: 사용자 (계좌 소유자가 서비스 사용자일 경우)
+- `Transfer`: 입금 모델
+  - `account_number`: 계좌번호
+  - `user_name`: 사용자명
+  - `transfer_amount`: 거래금액
+- `History`: 계좌 거래 내역 모델
+  - `account`: 계좌
 
-### stocks
+### assets
 
-- 주식 모델
-  - `id`: ID
-  - `company`: 회사 이름
-  - `isin`: ISIN 코드
-  - `ticker`: 티커, 종목 식별 부호(약칭)
+- `Asset`: 자산 모델
+  - `name`: 종목명
+  - `isin`: 식별자
+  - `group`: 자산군
+- `Group`: 자산군 모델
+  - `name`: 자산군 명
 
 ### traders
 
-- 증권사 모델
+- `Trader`: 증권사 모델
+  - `name`: 증권사명
+
+### transactions
+
+- `Transaction`: 거래 내역 모델
+  - `price`: 개당 가격
+  - `amount`: 수량
+  - `user`: 소유 사용자
+  - `asset`: 자산
+  - `account`: 계좌
 
 ### users
 
-- 사용자 모델
+- `User`: 사용자 모델
+  - `name`: 사용자 명
 
 ## API Docs
 
-### 유저 계좌 조회
+### 데이터 조회 (`invest` 앱)
 
-- Method: GET
-- URL: api/v1/accounts/
-- Description: 유저의 계좌명, 증권사, 계좌번호, 계좌 총 자산을 조회합니다.
-- Response Example
-  ```json
-  [
+- 투자 화면
+
+  - Method: GET
+  - URL: /api/v1/invest/user/<int:user_pk>/
+  - Response:
+    ```json
+    [
+      {
+        'name': 계좌명,
+        'trader': 증권사,
+        'number': 계좌번호,
+        'total_profit': 계좌 총 자산,
+      },
+      ...
+    ]
+    ```
+
+- 투자상세 화면
+
+  - Method: GET
+  - URL: /api/v1/invest/user/<int:user_pk>/account/<int:account_pk>/
+  - Response:
+    ```json
     {
-      "number": "5736692368320",
-      "name": "내 집 마련",
-      "total_assets": 2929245
+      'name': 계좌명,
+      'trader': 증권사ID,
+      'number': 계좌번호,
+      'total_assets': 계좌 총 자산,
+      'principal': 투자 원금,
+      'total_profit': 총 수익금,
+      'profit_rate': 수익률
     }
-  ]
-  ```
+    ```
 
-### 보유 종목의 자산군 조회
+- 보유종목 화면 API
 
-- Method: GET
-- URL: api/v1/assets/groups/
-- Description: 유저가 보유한 자산의 자산군을 조회합니다.
-- Response Example
-  ```json
-  [
+  - Method: GET
+  - URL: /api/v1/invest/user/<int:user_pk>/account/<int:account_pk>/assets/
+  - Response:
+
+    ```json
     {
-      "id": 1,
-      "name": "미국 주식"
-    },
-    {
-      "id": 3,
-      "name": "선진국 주식"
-    },
-    {
-      "id": 4,
-      "name": "신흥국 주식"
-    },
-    {
-      "id": 6,
-      "name": "부동산 / 원자재"
-    },
-    {
-      "id": 7,
-      "name": "채권 / 현금"
+      보유 종목의 자산군:
+      [
+        {
+          'asset_name': 보유 종목명,
+          'asset_price': 보유 종목의 평가 금액 (종목 보유 수량 * 종목 현재가),
+          'asset_isin': 보유 종목 ISIN,
+        },
+        ...
+      ]
+      , ...
     }
-  ]
-  ```
-
-### 해당하는 자산군에 보유한 자산 조회
-
-- Method: GET
-- URL: api/v1/transactions/
-- Parameter
-  - group_id(required): int
-- Description: 자산군의 보유 종목 이름, 평가 금액(종목 보유 수량 \* 종목 현재가), ISIN의 목록을 조회합니다.
-- Response Example
-  ```json
-  [
-    {
-      "asset_name": "미국S&P500",
-      "asset_price": 180285,
-      "asset_isin": "KR7360750004"
-    },
-    {
-      "asset_name": "미국나스닥100",
-      "asset_price": 187967,
-      "asset_isin": "KR7133690008"
-    }
-  ]
-  ```
-
-### 투자 상세(미구현)
-
-- Method: GET
-- URL: api/v1/accounts/{account_id}/
-- Description: account_id에 해당하는 계좌의 계좌명, 증권사, 계좌번호, 계좌 총 자산, 투자 원금, 총 수익금(총 자산 - 투자 원금), 수익률(총 수익금 / 투자 원금 \* 100)을 조회합니다.
-- Response Example
+    ```
 
 ### 투자금 입금 Phase 1
 

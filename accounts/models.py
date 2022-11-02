@@ -15,7 +15,12 @@ class Account(models.Model):
         on_delete=models.CASCADE,
         verbose_name="계좌주",
     )
-    trader: models.ForeignKey = models.ForeignKey(Trader, on_delete=models.CASCADE, verbose_name="증권사")
+    name = models.CharField(max_length=80, verbose_name="계좌명")
+    trader: models.ForeignKey = models.ForeignKey(
+        Trader,
+        on_delete=models.CASCADE,
+        verbose_name="증권사"
+    )
     principal: models.PositiveBigIntegerField = models.PositiveBigIntegerField(
         verbose_name="투자원금",
     )

@@ -18,7 +18,7 @@ class AssetsGroupView(APIView):
         user = request.user
         groups_id = (
             Transaction.objects.filter(user=user)
-            .values_list("id", flat=True)
+            .values_list("asset__group__id", flat=True)
             .distinct()
         )
         groups = Group.objects.filter(id__in=groups_id)

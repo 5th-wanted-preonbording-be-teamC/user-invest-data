@@ -12,7 +12,7 @@ class AssetsGroupView(APIView):
     def get(self, request):
         """
         유저가 보유한 종목의 섹션 목록을 불러옵니다.
-        GET api/v1/assets/group/
+        GET api/v1/assets/groups/
         """
 
         user = request.user

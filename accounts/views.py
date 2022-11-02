@@ -1,8 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST
 from .models import Account, AccountOwner
-from .serializers import AccountSerializer
+from .serializers import AccountSerializer, TransferSerializer
 
 
 class AccountsView(APIView):
@@ -22,3 +23,19 @@ class AccountsView(APIView):
         accounts = Account.objects.filter(owner=owner.first())
         serializer = AccountSerializer(accounts, many=True)
         return Response(serializer.data)
+
+
+class AccountTransferView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        """
+        입금 거래 정보들을 서버에 등록합니다.(Phase 1)
+        POST api/v1/accounts/transfer/
+        """
+
+        serializer = TransferSerializer(data=request.data)
+        if serializer.is_valid():
+            transfer = serializer.save()
+            return Response({"transfer_identifier": transfer.id})
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)

@@ -19,8 +19,8 @@
     - [보유 종목의 자산군 조회](#보유-종목의-자산군-조회)
     - [해당하는 자산군에 보유한 자산 조회](#해당하는-자산군에-보유한-자산-조회)
     - [투자 상세(미구현)](#투자-상세미구현)
-    - [투자금 입금 Phase 1(미구현)](#투자금-입금-phase-1미구현)
-    - [투자금 입금 Phase 2(미구현)](#투자금-입금-phase-2미구현)
+    - [투자금 입금 Phase 1](#투자금-입금-phase-1)
+    - [투자금 입금 Phase 2](#투자금-입금-phase-2)
 
 ## 멤버소개
 
@@ -183,10 +183,10 @@ STOCK ||--o{ ACCOUNT : deal
 - Description: account_id에 해당하는 계좌의 계좌명, 증권사, 계좌번호, 계좌 총 자산, 투자 원금, 총 수익금(총 자산 - 투자 원금), 수익률(총 수익금 / 투자 원금 \* 100)을 조회합니다.
 - Response Example
 
-### 투자금 입금 Phase 1(미구현)
+### 투자금 입금 Phase 1
 
 - Method: POST
-- URL: 미정
+- URL: api/v1/accounts/transfer/
 - Description: 입금 거래 정보들을 서버에 등록합니다.
 - Request Example
   ```json
@@ -203,10 +203,10 @@ STOCK ||--o{ ACCOUNT : deal
   }
   ```
 
-### 투자금 입금 Phase 2(미구현)
+### 투자금 입금 Phase 2
 
 - Method: POST
-- URL: 미정
+- URL: api/v1/accounts/transfer/result/
 - Description: Phase 1에서 등록한 거래정보를 검증 후 실제 고객의 자산을 업데이트합니다.
 - Request Example
   ```json

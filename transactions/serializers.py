@@ -23,8 +23,7 @@ class TransactionSerializer(serializers.ModelSerializer):
         return obj.asset.isin
 
 
-class TransactionsByGroupSerializer(serializers.ListSerializer):
-    child = TransactionSerializer()
+class TransactionsByGroupSerializer(serializers.ModelSerializer):
 
     def to_representation(self, data: QuerySet[Transaction]):
         groups = Group.objects.all()
@@ -33,8 +32,7 @@ class TransactionsByGroupSerializer(serializers.ListSerializer):
         for transaction in data:
             group = transaction.asset.group
             bygroup[group].append(transaction)
-        return [
-            {
+        return {
                 group.name: TransactionSerializer(
                     transactions,
                     many=True,
@@ -42,4 +40,3 @@ class TransactionsByGroupSerializer(serializers.ListSerializer):
                 for group, transactions in bygroup.items()
                 if transactions
             }
-        ]

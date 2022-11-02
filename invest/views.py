@@ -35,13 +35,21 @@ class InvestsView(APIView):
 
     def get(self, request, user_pk):
         """
+        투자 화면API
+
+        Request:
         GET /api/v1/invest/user/<int:user_pk>/
 
-        투자 화면
-        - 계좌명
-        - 증권사
-        - 계좌번호
-        - 계좌 총 자산
+        Response:
+        [
+            {
+                'name': 계좌명,
+                'trader': 증권사,
+                'number': 계좌번호,
+                'total_profit': 계좌 총 자산,
+            },
+            ...
+        ]
         """
 
         user = request.user
@@ -62,7 +70,7 @@ class RedirectToSelfView(APIView):
     def get(self, request):
         """
         GET /api/v1/invest/user/
-        본인의 투자 화면으로 redirect
+        본인의 투자 화면(/api/v1/invest/user/<int:user_pk>/)으로 redirect
         """
 
         return HttpResponseRedirect(f"/api/v1/invest/user/{request.user.id}/")
@@ -73,16 +81,20 @@ class InvestDetailView(APIView):
 
     def get(self, request, user_pk, account_pk):
         """
+        투자 상세 화면 API
+        Request:
         GET /api/v1/invest/user/<int:user_pk>/account/<int:account_pk>/
 
-        투자 상세 화면
-        - 계좌명
-        - 증권사
-        - 계좌번호
-        - 계좌 총 자산
-        - 투자 원금
-        - 총 수익금 (총 자산 - 투자 원금)
-        - 수익률 (총 수익금 / 투자 원금 * 100)
+        Response:
+        {
+            'name': 계좌명,
+            'trader': 증권사ID,
+            'number': 계좌번호,
+            'total_assets': 계좌 총 자산,
+            'principal': 투자 원금,
+            'total_profit': 총 수익금,
+            'profit_rate': 수익률
+        }
         """
 
         user = request.user
@@ -109,13 +121,23 @@ class InvestTransactionsView(APIView):
 
     def get(self, request, user_pk, account_pk):
         """
+        보유종목 화면 API
+        Request:
         GET /api/v1/invest/user/<int:user_pk>/account/<int:account_pk>/assets
 
-        보유종목 화면 API
-        - 보유 종목명
-        - 보유 종목의 자산군
-        - 보유 종목의 평가 금액 (종목 보유 수량 * 종목 현재가)
-        - 보유 종목 ISIN
+        Response:
+        {
+            보유 종목의 자산군:
+            [
+                {
+                    'asset_name': 보유 종목명,
+                    'asset_price': 보유 종목의 평가 금액 (종목 보유 수량 * 종목 현재가),
+                    'asset_isin': 보유 종목 ISIN,
+                },
+                ...
+            ]
+            , ...
+        },
         """
 
         user = request.user

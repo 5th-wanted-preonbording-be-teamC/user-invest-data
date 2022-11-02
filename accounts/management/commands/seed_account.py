@@ -22,8 +22,8 @@ def create_traderof_userof_by_infocsv(
                 continue
             trader_map[number] = (
                 traders.first()
-                if (traders := Trader.objects.filter(company=trader)).exists()
-                else Trader.objects.create(company=trader)
+                if (traders := Trader.objects.filter(name=trader)).exists()
+                else Trader.objects.create(name=trader)
             )
             user_map[number] = (
                 users.first()

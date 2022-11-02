@@ -1,3 +1,5 @@
+from rest_framework import status
+from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -26,15 +28,20 @@ class AccountsView(APIView):
 class AccountsDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def get_account(self, account_number):
+        try:
+            return Account.objects.get(number=account_number)
+        except Account.DoesNotExist:
+            raise NotFound
+
     def get(self, request, account_number):
         """
         유저가 보유하고 있는 계좌의 투자 상세를 불러옵니다.
         GET api/v1/accounts/{account_number}
         """
-        user = request.user
-        owner = AccountOwner.objects.filter(user=user)
-        accounts = Account.objects.filter(owner=owner.first(), number=account_number)
-        serializer = AccountDetailSerializer(accounts, many=True)
-        return Response(serializer.data)
+
+        accounts = self.get_account(account_number)
+        serializer = AccountDetailSerializer(accounts)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 

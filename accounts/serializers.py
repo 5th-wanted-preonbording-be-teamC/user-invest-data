@@ -11,7 +11,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
     def get_total_assets(self, obj):
         transactions = obj.transactions.all()
-        return sum(transaction.asset_price() for transaction in transactions)
+        return sum(transaction.asset_price() for transaction in transactions) + obj.principal
 
 
 class AccountDetailSerializer(AccountSerializer):

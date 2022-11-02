@@ -12,9 +12,9 @@ from transactions.serializers import TransactionsByGroupSerializer
 class InvestsView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, pk):
+    def get(self, request, user_pk):
         """
-        GET /api/v1/invest/user/<int:pk>/
+        GET /api/v1/invest/user/<int:user_pk>/
 
         투자 화면
         - 계좌명
@@ -24,7 +24,7 @@ class InvestsView(APIView):
         """
 
         user = request.user
-        if user.id == pk:
+        if user.id == user_pk:
             owner = AccountOwner.objects.filter(user=user)
             if not owner.exists():
                 # TODO: 계좌 등록 페이지로 연결

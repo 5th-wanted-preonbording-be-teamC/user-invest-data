@@ -13,19 +13,19 @@ class Command(BaseCommand):
             "./data/asset_group_info_set.csv", newline=""
         ) as asset_group_info_set:
             asset_reader = csv.reader(asset_group_info_set)
-            for index, row in enumerate(asset_reader):
+            next(asset_reader)  # skip header
+            for name, isin, group_name in asset_reader:
                 try:
-                    if index != 0:
-                        group, created = Group.objects.get_or_create(name=row[2])
-                        asset = Asset.objects.create(
-                            name=row[0],
-                            isin=row[1],
-                            group=group,
-                        )
-                        self.stdout.write(
-                            f"create {asset} {self.style.SUCCESS('success!')}"
-                        )
+                    group, _ = Group.objects.get_or_create(name=group_name)
+                    asset = Asset.objects.create(
+                        name=name,
+                        isin=isin,
+                        group=group,
+                    )
+                    self.stdout.write(
+                        f"create {asset} {self.style.SUCCESS('success!')}"
+                    )
                 except IntegrityError:
                     self.stdout.write(
-                        f"{row[0]} already exists {self.style.ERROR('fail!')}"
+                        f"{name} already exists {self.style.ERROR('fail!')}"
                     )

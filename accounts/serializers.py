@@ -1,7 +1,13 @@
 from django.db.models import QuerySet
 from rest_framework import serializers
 from transactions.models import Transaction
-from .models import Account
+from .models import Account, Transfer
+
+
+class TransferSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transfer
+        fields = "__all__"
 
 
 class AccountSerializer(serializers.ModelSerializer):

@@ -5,6 +5,8 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 from django.http import HttpResponseRedirect
 from accounts.models import Account, AccountOwner
 from accounts.serializers import AccountSerializer, AccountDetailSerializer
+from transactions.models import Transaction
+from transactions.serializers import TransactionsByGroupSerializer
 
 
 class InvestsView(APIView):
@@ -81,4 +83,43 @@ class InvestDetailView(APIView):
             )
         account = filtered_account.first()
         serializer = AccountDetailSerializer(account)
+        return Response(serializer.data)
+
+
+class InvestTransactionsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_pk, account_pk):
+        """
+        GET /api/v1/invest/user/<int:user_pk>/account/<int:account_pk>/assets
+
+        보유종목 화면 API
+        - 보유 종목명
+        - 보유 종목의 자산군
+        - 보유 종목의 평가 금액 (종목 보유 수량 * 종목 현재가)
+        - 보유 종목 ISIN
+        """
+
+        user = request.user
+        if user.id != user_pk:
+            return Response(HTTP_400_BAD_REQUEST)
+        filtered_owner = AccountOwner.objects.filter(user=user)
+        if not filtered_owner.exists():
+            # TODO: 계좌 등록 페이지로 연결
+            return Response({"message": "계좌 소유주로 등록되어 있지 않습니다."}, status=404)
+        owner = filtered_owner.first()
+        filtered_account = Account.objects.filter(
+            owner=owner,
+            number=account_pk,
+        )
+        if not filtered_account.exists():
+            return Response(
+                {"message": "{owner.name} 님의 {account_pk} 계좌를 조회할 수 없습니다."},
+                status=404,
+            )
+        account = filtered_account.first()
+        serializer = TransactionsByGroupSerializer(
+            Transaction.objects.get(account=account),
+            many=True,
+        )
         return Response(serializer.data)

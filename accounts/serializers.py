@@ -15,7 +15,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ("number", "name", "total_assets")
+        fields = ("number", "name", "total_assets", "trader")
 
     def get_total_assets(self, obj):
         transactions = obj.transactions.all()

@@ -96,7 +96,7 @@ class TestInvest(APITestCase):
         self.assertRedirects(response, set_api_url(self.Yuser.id))
         self.client.logout()
 
-    def test_invest_detail(self):
+    def test_invest(self):
         # 로그인 사용자와 pk가 일치하는 경우 200
         self.client.force_login(self.Yuser)
         response = self.client.get(set_api_url(self.Yuser.id))
@@ -113,7 +113,7 @@ class TestInvest(APITestCase):
         response = self.client.get(set_api_url(self.user_without_owner.id))
         self.assertEqual(response.status_code, 404)
 
-    def test_invests(self):
+    def test_invests_detail(self):
         # 로그인 사용자가 소유한 계좌를 요청했을 경우 200
         self.client.force_login(self.Yuser)
         response = self.client.get(set_api_url(self.Yuser.id, self.Yacc.number))

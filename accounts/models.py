@@ -6,7 +6,7 @@ from users.models import User
 
 class Transfer(models.Model):
     account_number = models.CharField(max_length=80, verbose_name="계좌번호")
-    user_name = models.CharField(max_length=80, verbose_name="유져명")
+    user_name = models.CharField(max_length=80, verbose_name="유저명")
     transfer_amount = models.PositiveIntegerField(verbose_name="거래금액")
 
     def __str__(self):

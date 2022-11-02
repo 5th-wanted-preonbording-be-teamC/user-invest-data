@@ -1,9 +1,9 @@
-from rest_framework.views import APIView, api_view
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from django.http import HttpResponseRedirect
-from accounts.models import Account
+from accounts.models import Account, AccountOwner
 from accounts.serializers import AccountSerializer
 
 
@@ -22,7 +22,11 @@ class InvestsView(APIView):
 
         user = request.user
         if user.id == pk:
-            accounts = Account.objects.filter(user=user)
+            owner = AccountOwner.objects.filter(user=user)
+            if not owner.exists():
+                # TODO: 계좌 등록 페이지로 연결
+                return Response({"message": "계좌 소유주로 등록되어 있지 않습니다."}, status=404)
+            accounts = Account.objects.filter(owner=owner.first())
             serializer = AccountSerializer(accounts, many=True)
             return Response(serializer.data)
         return Response(HTTP_400_BAD_REQUEST)

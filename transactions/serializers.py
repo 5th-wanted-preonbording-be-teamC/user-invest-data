@@ -2,7 +2,6 @@ from django.db.models import QuerySet
 from rest_framework import serializers
 from .models import Transaction
 from assets.models import Group
-from assets.serializers import GroupSerializer
 
 
 class TransactionSerializer(serializers.ModelSerializer):

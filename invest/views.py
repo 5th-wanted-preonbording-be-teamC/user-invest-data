@@ -137,7 +137,7 @@ class InvestTransactionsView(APIView):
                 ...
             ]
             , ...
-        },
+        }
         """
 
         user = request.user

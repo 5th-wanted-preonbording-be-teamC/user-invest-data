@@ -26,3 +26,15 @@ class InvestsView(APIView):
             serializer = AccountSerializer(accounts, many=True)
             return Response(serializer.data)
         return Response(HTTP_400_BAD_REQUEST)
+
+
+class RedirectToSelfView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        GET /api/v1/invest/user/
+        본인의 투자 화면으로 redirect
+        """
+
+        return HttpResponseRedirect(f"/api/v1/invest/users/{request.user.id}/")

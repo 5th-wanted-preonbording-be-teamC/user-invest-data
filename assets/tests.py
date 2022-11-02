@@ -1,17 +1,17 @@
 from rest_framework.test import APITestCase
-from .models import AccountOwner
+from accounts.models import AccountOwner
 from users.models import User
 
 
-class TestAccounts(APITestCase):
-    def test_accounts(self):
+class TestAssetsGroups(APITestCase):
+    def test_assets_groups(self):
         """
-        유저가 보유한 계좌의 총 자산 테스트
-        GET api/v1/accounts/
+        유저가 보유한 자산의 자산군 목록 테스트
+        GET api/v1/assets/groups/
         """
 
         # 비로그인 상태 요청
-        response = self.client.get("/api/v1/accounts/")
+        response = self.client.get("/api/v1/assets/groups/")
         data = response.json()
 
         self.assertEqual(response.status_code, 403)

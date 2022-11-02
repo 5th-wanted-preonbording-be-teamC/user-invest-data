@@ -1,8 +1,6 @@
 from django.db import models
-
 from traders.models import Trader
 from users.models import User
-from traders.models import Trader
 
 
 class AccountOwner(models.Model):
@@ -49,10 +47,6 @@ class Account(models.Model):
     def __str__(self) -> str:
         return f"{self.owner}의 계좌 {self.number}"
 
-class History(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, verbose_name="계좌")
-
 
 class History(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, verbose_name="계좌")
-

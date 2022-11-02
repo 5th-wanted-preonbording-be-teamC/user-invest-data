@@ -9,6 +9,25 @@ from transactions.models import Transaction
 from transactions.serializers import TransactionsByGroupSerializer
 
 
+class ErRes:
+    @staticmethod
+    def data_status(msg, status):
+        return {"data": {"message": msg}, "status": status}
+
+    USER_ID_NOT_MATCH_WITH_USER_PK = data_status("권한이 없습니다.", 403)
+    # 사용자의 아이디와 사용자가 요청한 API의 user_pk가 일치하지 않을 때
+    USER_CONNECTED_NO_ACCOUNTOWNER = data_status("계좌 소유주로 등록되어 있지 않습니다.", 404)
+    # 요청한 사용자에게 연결된 계좌 소유자가 없을 때
+
+    @staticmethod
+    def USER_DONT_HAVE_THE_ACCOUNT(name, account):
+        # 사용자가 조회할 수 없는 계좌를 요청했을 때
+        return ErRes.data_status(
+            f"{name} 님의 {account} 계좌를 조회할 수 없습니다.",
+            404,
+        )
+
+
 class InvestsView(APIView):
     permission_classes = [IsAuthenticated]
 

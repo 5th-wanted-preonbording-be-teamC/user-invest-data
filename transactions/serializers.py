@@ -1,5 +1,7 @@
+from django.db.models import QuerySet
 from rest_framework import serializers
 from .models import Transaction
+from assets.models import Group
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -19,3 +21,24 @@ class TransactionSerializer(serializers.ModelSerializer):
 
     def get_asset_isin(self, obj):
         return obj.asset.isin
+
+
+class TransactionsByGroupSerializer(serializers.ListSerializer):
+    class Meta:
+        model = Transaction
+        fields = ("name", "price", "isin", "group")
+
+    def to_representation(self, data: QuerySet[Transaction]):
+        groups = Group.objects.all()
+        bygroup = {group: [] for group in groups}
+
+        for transaction in data:
+            group = transaction.asset.group
+            bygroup[group].append(TransactionSerializer(transaction))
+
+        # 비어있는 그룹 제거
+        for group in groups:
+            if not bygroup[group]:
+                del bygroup[group]
+
+        return bygroup

@@ -79,5 +79,6 @@ class InvestDetailView(APIView):
                 {"message": "{owner.name} 님의 {account_pk} 계좌를 조회할 수 없습니다."},
                 status=404,
             )
-        serializer = AccountDetailSerializer(filtered_account, many=True)
+        account = filtered_account.first()
+        serializer = AccountDetailSerializer(account)
         return Response(serializer.data)
